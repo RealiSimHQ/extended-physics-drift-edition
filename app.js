@@ -124,6 +124,7 @@ function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
     }
 
     const fmt = v => v.toFixed(3);
+    // Positive LF = push left wheel outward, Negative RF = push right wheel outward
     return {
         WHEEL_LF: fmt(fOff),   SUSP_LF: fmt(fOff),
         WHEEL_RF: fmt(-fOff),  SUSP_RF: fmt(-fOff),
