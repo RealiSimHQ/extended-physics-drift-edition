@@ -109,13 +109,41 @@ function detectSystem(name) {
     return 'metric';
 }
 
-// ─── GRAPHICS_OFFSETS — standardized for all cars ───
-function getStandardOffsets() {
+// ─── GRAPHICS_OFFSETS — compensate if OG track < baseline ───
+function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
+    // Base offsets (when track >= baseline)
+    const base = {
+        WHEEL_LF: 0, SUSP_LF: 0,
+        WHEEL_RF: 0, SUSP_RF: 0,
+        WHEEL_LR: -0.005, SUSP_LR: -0.005,
+        WHEEL_RR: 0.005, SUSP_RR: 0.005
+    };
+
+    // If OG track is narrower than baseline, shift wheels inward visually
+    // so the 3D model lines up with the wider physics track.
+    // Offset per side = (baseline - ogTrack) / 2  (half per side, inward)
+    if (ogFrontTrack < TRACK_BASELINE) {
+        const halfDiff = (TRACK_BASELINE - ogFrontTrack) / 2;
+        base.WHEEL_LF += halfDiff;   // push left wheel right (inward)
+        base.SUSP_LF  += halfDiff;
+        base.WHEEL_RF -= halfDiff;   // push right wheel left (inward)
+        base.SUSP_RF  -= halfDiff;
+    }
+    if (ogRearTrack < TRACK_BASELINE) {
+        const halfDiff = (TRACK_BASELINE - ogRearTrack) / 2;
+        base.WHEEL_LR += halfDiff;
+        base.SUSP_LR  += halfDiff;
+        base.WHEEL_RR -= halfDiff;
+        base.SUSP_RR  -= halfDiff;
+    }
+
+    // Format to 3 decimal places
+    const fmt = v => v >= 0 ? v.toFixed(3) : v.toFixed(3);
     return {
-        WHEEL_LF: '-0.00', SUSP_LF: '-0.00',
-        WHEEL_RF: '0.00', SUSP_RF: '0.00',
-        WHEEL_LR: '-0.005', SUSP_LR: '-0.005',
-        WHEEL_RR: '0.005', SUSP_RR: '0.005'
+        WHEEL_LF: fmt(base.WHEEL_LF), SUSP_LF: fmt(base.SUSP_LF),
+        WHEEL_RF: fmt(base.WHEEL_RF), SUSP_RF: fmt(base.SUSP_RF),
+        WHEEL_LR: fmt(base.WHEEL_LR), SUSP_LR: fmt(base.SUSP_LR),
+        WHEEL_RR: fmt(base.WHEEL_RR), SUSP_RR: fmt(base.SUSP_RR)
     };
 }
 
@@ -211,11 +239,15 @@ function buildSuspensionsIni(og, system) {
     const template = system === 'standard' ? CAL.suspensions_standard : CAL.suspensions_metric;
     const ogSusp = og.suspensions;
 
-    const frontTrack = parseFloat(ogSusp.FRONT?.TRACK || '1.5');
-    const rearTrack = parseFloat(ogSusp.REAR?.TRACK || '1.5');
+    const ogFrontTrack = parseFloat(ogSusp.FRONT?.TRACK || '1.5');
+    const ogRearTrack = parseFloat(ogSusp.REAR?.TRACK || '1.5');
 
-    // Standardized GRAPHICS_OFFSETS
-    const offsets = getStandardOffsets();
+    // Clamp tracks to baseline minimum
+    const frontTrack = Math.max(ogFrontTrack, TRACK_BASELINE);
+    const rearTrack = Math.max(ogRearTrack, TRACK_BASELINE);
+
+    // Compute GRAPHICS_OFFSETS (compensates if OG track was narrower)
+    const offsets = calcGraphicsOffsets(ogFrontTrack, ogRearTrack);
 
     // Replace placeholders in the template
     let out = template;
