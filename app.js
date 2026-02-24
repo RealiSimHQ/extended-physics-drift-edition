@@ -110,40 +110,25 @@ function detectSystem(name) {
 }
 
 // ─── GRAPHICS_OFFSETS — compensate if OG track < baseline ───
+// Convention: positive = push wheel outward on left side, negative = push outward on right side
+// When physics track (1.75) is wider than OG model track, we push wheels OUT so the
+// 3D model's narrower body still lines up with the wider physics wheels.
 function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
-    // Base offsets (when track >= baseline)
-    const base = {
-        WHEEL_LF: 0, SUSP_LF: 0,
-        WHEEL_RF: 0, SUSP_RF: 0,
-        WHEEL_LR: -0.005, SUSP_LR: -0.005,
-        WHEEL_RR: 0.005, SUSP_RR: 0.005
-    };
+    let fOff = 0, rOff = 0;
 
-    // If OG track is narrower than baseline, shift wheels inward visually
-    // so the 3D model lines up with the wider physics track.
-    // Offset per side = (baseline - ogTrack) / 2  (half per side, inward)
     if (ogFrontTrack < TRACK_BASELINE) {
-        const halfDiff = (TRACK_BASELINE - ogFrontTrack) / 2;
-        base.WHEEL_LF += halfDiff;   // push left wheel right (inward)
-        base.SUSP_LF  += halfDiff;
-        base.WHEEL_RF -= halfDiff;   // push right wheel left (inward)
-        base.SUSP_RF  -= halfDiff;
+        fOff = (TRACK_BASELINE - ogFrontTrack) / 2;
     }
     if (ogRearTrack < TRACK_BASELINE) {
-        const halfDiff = (TRACK_BASELINE - ogRearTrack) / 2;
-        base.WHEEL_LR += halfDiff;
-        base.SUSP_LR  += halfDiff;
-        base.WHEEL_RR -= halfDiff;
-        base.SUSP_RR  -= halfDiff;
+        rOff = (TRACK_BASELINE - ogRearTrack) / 2;
     }
 
-    // Format to 3 decimal places
-    const fmt = v => v >= 0 ? v.toFixed(3) : v.toFixed(3);
+    const fmt = v => v.toFixed(3);
     return {
-        WHEEL_LF: fmt(base.WHEEL_LF), SUSP_LF: fmt(base.SUSP_LF),
-        WHEEL_RF: fmt(base.WHEEL_RF), SUSP_RF: fmt(base.SUSP_RF),
-        WHEEL_LR: fmt(base.WHEEL_LR), SUSP_LR: fmt(base.SUSP_LR),
-        WHEEL_RR: fmt(base.WHEEL_RR), SUSP_RR: fmt(base.SUSP_RR)
+        WHEEL_LF: fmt(fOff),   SUSP_LF: fmt(fOff),
+        WHEEL_RF: fmt(-fOff),  SUSP_RF: fmt(-fOff),
+        WHEEL_LR: fmt(rOff),   SUSP_LR: fmt(rOff),
+        WHEEL_RR: fmt(-rOff),  SUSP_RR: fmt(-rOff)
     };
 }
 
