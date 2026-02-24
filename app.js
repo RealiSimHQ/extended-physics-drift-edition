@@ -18,6 +18,18 @@ function checkPatreonSession() {
     return null;
 }
 
+function hasUsedTrial() {
+    return localStorage.getItem('epg_trial_used') === 'true';
+}
+
+function markTrialUsed() {
+    localStorage.setItem('epg_trial_used', 'true');
+}
+
+function isTrialMode() {
+    return !checkPatreonSession() && !hasUsedTrial();
+}
+
 function initPatreonGate() {
     const patron = checkPatreonSession();
     const gate = document.getElementById('patreon-gate');
@@ -25,15 +37,21 @@ function initPatreonGate() {
 
     if (patron) {
         gate.classList.add('hidden');
-        // Add welcome message
         const welcome = document.createElement('div');
         welcome.className = 'patron-welcome';
         welcome.textContent = `Welcome, ${patron}! 🎉`;
         gate.parentNode.insertBefore(welcome, uploadSection);
+    } else if (!hasUsedTrial()) {
+        // Free trial — show tool with trial banner
+        gate.innerHTML = `<div class="gate-card" style="border-color:var(--accent-cyan);padding:20px;">
+            <p style="margin:0;color:var(--accent-cyan);">🎁 <strong>Free Trial</strong> — Generate one physics pack free. <a href="https://www.patreon.com/checkout/RealiSimHQ?rid=26118508" target="_blank" style="color:var(--accent-gold);">Subscribe for unlimited access</a></p>
+        </div>`;
     } else {
-        // Hide upload behind gate
+        // Trial used, must subscribe
         uploadSection.classList.remove('active');
         uploadSection.style.display = 'none';
+        gate.querySelector('h3').textContent = '🔒 Trial Used';
+        gate.querySelector('p').textContent = 'You\'ve used your free generation. Subscribe to continue using the tool.';
     }
 }
 
@@ -460,6 +478,7 @@ async function generatePack() {
         // Download via modal
         const blob = await zip.generateAsync({ type: 'blob' });
         const carName = (State.ogMeta.carName || 'car').replace(/[^a-zA-Z0-9_-]/g, '_');
+        if (!checkPatreonSession()) markTrialUsed();
         showDownloadModal(blob, `${carName}_ExtendedDrift.zip`);
 
     } catch (e) {
@@ -494,15 +513,11 @@ function showDownloadModal(blob, filename) {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
             </div>
-            <h2 class="dm-title">Your extended physics are ready</h2>
+            <h2 class="dm-title">Generating your physics pack…</h2>
             <p class="dm-subtitle">Extended Drift Physics → <span style="color:var(--accent-cyan)">${carName}</span></p>
             <div class="dm-divider"></div>
-            <p class="dm-cta">If this saved you time, consider giving back.</p>
-            <div class="dm-links">
-                <a href="https://www.patreon.com/RealiSimHQ" target="_blank" class="support-btn patreon-btn">Support on Patreon</a>
-                <a href="https://paypal.me/PodcastPrimates" target="_blank" class="support-btn tip-btn">Leave a Tip</a>
-            </div>
-            <p style="font-size:0.85rem;color:var(--text-secondary);opacity:0.5;margin-top:12px;">100% of tips go toward building more tools for the community</p>
+            <p class="dm-cta" style="font-size:1.1rem;">Thank you for your continued support! 🙏</p>
+            <p style="color:var(--text-secondary);margin-top:8px;">Have fun out there. 🏎️💨</p>
         </div>
     `;
     document.body.appendChild(modal);
