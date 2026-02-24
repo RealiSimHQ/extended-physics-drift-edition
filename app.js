@@ -163,8 +163,9 @@ function buildCarIni(og) {
     // BASIC — OG geometry, template physics
     out += '[BASIC]\n';
     const ogY = parts[1] || '0';
-    out += `GRAPHICS_OFFSET=${ogX}, ${ogY}, ${ogZ}\n`;
-    out += `GRAPHICS_PITCH_ROTATION=-1\n`;
+    const adjZ = (parseFloat(ogZ) - 0.01).toFixed(3);
+    out += `GRAPHICS_OFFSET=${ogX}, ${ogY}, ${adjZ}\n`;
+    out += `GRAPHICS_PITCH_ROTATION=-0.35\n`;
     out += `TOTALMASS=1315.48\n`;
     out += `INERTIA=${ogCar.BASIC?.INERTIA || ''}\n\n`;
 
@@ -239,9 +240,10 @@ function buildSuspensionsIni(og, system) {
     let out = template;
 
     // Fill in WHEELBASE and CG_LOCATION from OG
+    const adjWheelbase = (parseFloat(ogSusp.BASIC?.WHEELBASE || '2.4') + 0.02).toFixed(3);
     out = out.replace(
         /^WHEELBASE=.*$/m,
-        `WHEELBASE=${ogSusp.BASIC?.WHEELBASE || '2.4'}`
+        `WHEELBASE=${adjWheelbase}`
     );
     out = out.replace(
         /^CG_LOCATION=.*$/m,
