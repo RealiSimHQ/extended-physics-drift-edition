@@ -110,29 +110,26 @@ function detectSystem(name) {
 }
 
 // ─── GRAPHICS_OFFSETS — compensate if OG track < baseline ───
-// Convention: positive = push wheel outward on left side, negative = push outward on right side
-// When physics track (1.75) is wider than OG model track, we push wheels OUT so the
-// 3D model's narrower body still lines up with the wider physics wheels.
-function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
-    // Extra padding to account for wider tires/rims in extended physics
-    const OFFSET_PAD = 0.04;
+// Derived from in-game calibration: offset ≈ (baseline - ogTrack) × OFFSET_K
+// Signs: negative LF/LR = outward left, positive RF/RR = outward right
+const OFFSET_K = 0.277;
 
-    let fOff = OFFSET_PAD, rOff = OFFSET_PAD;
+function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
+    let fOff = 0, rOff = 0;
 
     if (ogFrontTrack < TRACK_BASELINE) {
-        fOff += (TRACK_BASELINE - ogFrontTrack) / 2;
+        fOff = (TRACK_BASELINE - ogFrontTrack) * OFFSET_K;
     }
     if (ogRearTrack < TRACK_BASELINE) {
-        rOff += (TRACK_BASELINE - ogRearTrack) / 2;
+        rOff = (TRACK_BASELINE - ogRearTrack) * OFFSET_K;
     }
 
     const fmt = v => v.toFixed(3);
-    // Match reference: positive LF/LR (left outward), negative RF/RR (right outward)
     return {
-        WHEEL_LF: fmt(fOff),   SUSP_LF: fmt(fOff),
-        WHEEL_RF: fmt(-fOff),  SUSP_RF: fmt(-fOff),
-        WHEEL_LR: fmt(rOff),   SUSP_LR: fmt(rOff),
-        WHEEL_RR: fmt(-rOff),  SUSP_RR: fmt(-rOff)
+        WHEEL_LF: fmt(-fOff),  SUSP_LF: fmt(-fOff),
+        WHEEL_RF: fmt(fOff),   SUSP_RF: fmt(fOff),
+        WHEEL_LR: fmt(-rOff),  SUSP_LR: fmt(-rOff),
+        WHEEL_RR: fmt(rOff),   SUSP_RR: fmt(rOff)
     };
 }
 
