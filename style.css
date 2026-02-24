@@ -231,42 +231,96 @@ header h1 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
-    max-width: 600px;
+    max-width: 640px;
     margin: 0 auto;
 }
 @media (max-width: 600px) {
     .engine-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Engine card base */
 .engine-card {
-    background: var(--surface);
-    border: 2px solid var(--border);
+    position: relative;
+    background: var(--bg-card);
+    border: 2px solid transparent;
     border-radius: 12px;
-    padding: 20px 12px;
+    padding: 24px 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    overflow: hidden;
+    z-index: 0;
 }
+
+/* Rotating seafoam border light on hover */
+.engine-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    padding: 2px;
+    background: conic-gradient(from 0deg, transparent 70%, #3dffc0 85%, #3dffc0ee 90%, transparent 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    pointer-events: none;
+}
+.engine-card:hover::before { opacity: 1; }
+.engine-card[data-tier="1"]::before { animation: spin 3s linear infinite; }
+.engine-card[data-tier="2"]::before { animation: spin 2.2s linear infinite; }
+.engine-card[data-tier="3"]::before { animation: spin 1.5s linear infinite; }
+.engine-card[data-tier="4"]::before { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Tier colors — idle border tint */
+.engine-card[data-tier="1"] { border-color: #4a90a4; }
+.engine-card[data-tier="2"] { border-color: #5a8fd4; }
+.engine-card[data-tier="3"] { border-color: #9b6ddb; }
+.engine-card[data-tier="4"] { border-color: #e05555; }
+
+/* Tier HP colors */
+.engine-card[data-tier="1"] .engine-hp { color: #6ec6d8; }
+.engine-card[data-tier="2"] .engine-hp { color: #7ab4f5; }
+.engine-card[data-tier="3"] .engine-hp { color: #b88af0; }
+.engine-card[data-tier="4"] .engine-hp { color: #ff6b6b; }
+
 .engine-card:hover {
-    border-color: var(--accent-cyan);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 217, 255, 0.15);
+    transform: translateY(-3px);
 }
+
+/* Selected state — bright glow matches tier */
 .engine-card.selected {
-    border-color: var(--accent-cyan);
-    background: rgba(0, 217, 255, 0.08);
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    box-shadow: 0 0 24px rgba(61, 255, 192, 0.25);
 }
+.engine-card[data-tier="1"].selected { border-color: #6ec6d8; box-shadow: 0 0 20px rgba(110,198,216,0.3); }
+.engine-card[data-tier="2"].selected { border-color: #7ab4f5; box-shadow: 0 0 20px rgba(122,180,245,0.3); }
+.engine-card[data-tier="3"].selected { border-color: #b88af0; box-shadow: 0 0 20px rgba(184,138,240,0.3); }
+.engine-card[data-tier="4"].selected { border-color: #ff6b6b; box-shadow: 0 0 20px rgba(255,107,107,0.3); }
+
+/* Selection animation — scale pop */
+.engine-card.just-selected {
+    animation: cardPop 0.35s ease;
+}
+@keyframes cardPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
 .engine-hp {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    color: var(--text-primary);
     line-height: 1;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 .engine-card.selected .engine-hp {
-    color: var(--accent-cyan);
+    text-shadow: 0 0 12px currentColor;
 }
 .engine-unit {
     font-size: 0.75rem;
@@ -278,4 +332,19 @@ header h1 {
     font-size: 0.8rem;
     color: var(--text-secondary);
     margin-top: 4px;
+}
+
+/* ─── Gold pulse Generate button ─── */
+.btn-download.engine-ready {
+    border: 2px solid var(--accent-gold);
+    color: var(--accent-gold);
+    animation: goldPulse 1.8s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(251,191,36,0.2);
+}
+.btn-download.engine-ready .btn-icon {
+    stroke: var(--accent-gold);
+}
+@keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(251,191,36,0.15), inset 0 0 0 rgba(251,191,36,0); border-color: rgba(251,191,36,0.5); }
+    50% { box-shadow: 0 0 25px rgba(251,191,36,0.4), inset 0 0 8px rgba(251,191,36,0.05); border-color: rgba(251,191,36,1); }
 }

@@ -405,8 +405,10 @@ function processOG() {
 
     // Reset engine selection
     State.selectedEngine = '375hp';
-    document.querySelectorAll('.engine-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector('.engine-card[data-engine="375hp"]').classList.add('selected');
+    document.querySelectorAll('.engine-card').forEach(c => { c.classList.remove('selected'); c.classList.remove('just-selected'); });
+    const defaultCard = document.querySelector('.engine-card[data-engine="375hp"]');
+    defaultCard.classList.add('selected');
+    document.getElementById('download-btn').classList.add('engine-ready');
 }
 
 // ─── Generate ZIP ───
@@ -598,9 +600,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Engine selector
     document.querySelectorAll('.engine-card').forEach(card => {
         card.addEventListener('click', () => {
-            document.querySelectorAll('.engine-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
+            document.querySelectorAll('.engine-card').forEach(c => {
+                c.classList.remove('selected');
+                c.classList.remove('just-selected');
+            });
+            card.classList.add('selected', 'just-selected');
             State.selectedEngine = card.dataset.engine;
+            // Gold pulse on generate button
+            const btn = document.getElementById('download-btn');
+            btn.classList.add('engine-ready');
         });
     });
 
