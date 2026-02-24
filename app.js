@@ -69,7 +69,8 @@ const TRACK_BASELINE = 1.75; // meters
 const State = {
     ogFiles: {},
     ogParsed: {},
-    ogMeta: {}
+    ogMeta: {},
+    selectedEngine: '375hp'
 };
 
 // ─── INI Parser ───
@@ -394,11 +395,18 @@ function processOG() {
     document.getElementById('system-select').value = system;
     document.getElementById('car-system').textContent = system === 'standard' ? 'Standard (American)' : 'Metric (JDM/Euro)';
 
-    // Collapse upload, show generate
+    // Collapse upload, show engine selector + generate
     document.getElementById('upload-section').classList.add('hidden');
     document.getElementById('upload-dropdown').classList.remove('hidden');
     document.getElementById('upload-dropdown-label').textContent = carName;
+    document.getElementById('engine-section').classList.remove('hidden');
+    document.getElementById('engine-section').classList.add('active');
     document.getElementById('generate-section').classList.add('active');
+
+    // Reset engine selection
+    State.selectedEngine = '375hp';
+    document.querySelectorAll('.engine-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector('.engine-card[data-engine="375hp"]').classList.add('selected');
 }
 
 // ─── Generate ZIP ───
@@ -430,6 +438,17 @@ async function generatePack() {
                 zip.file('data/' + fn, arr);
             } else {
                 zip.file('data/' + fn, content);
+            }
+        }
+
+        // Swap engine files if non-default engine selected
+        const eng = State.selectedEngine;
+        if (eng !== '375hp') {
+            const engKey = 'engine_' + eng; // engine_240hp, engine_420hp, engine_530hp
+            const engData = CAL[engKey];
+            if (engData) {
+                zip.file('data/engine.ini', engData.engine_ini);
+                zip.file('data/power.lut', engData.power_lut);
             }
         }
 
@@ -576,7 +595,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#upload-dropdown .dropdown-arrow').classList.toggle('open');
     });
 
-    // System select (hidden, auto-detected)
+    // Engine selector
+    document.querySelectorAll('.engine-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.engine-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            State.selectedEngine = card.dataset.engine;
+        });
+    });
 
     // Generate
     document.getElementById('download-btn').addEventListener('click', generatePack);

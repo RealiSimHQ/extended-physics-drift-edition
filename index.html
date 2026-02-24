@@ -78,6 +78,36 @@
             <option value="metric">Metric</option>
         </select>
 
+        <!-- Engine Selector -->
+        <section id="engine-section" class="step hidden">
+            <div class="engine-selector">
+                <h3 class="engine-title">Select Engine</h3>
+                <p class="engine-subtitle">Choose a power level for your build</p>
+                <div class="engine-grid">
+                    <button class="engine-card selected" data-engine="375hp">
+                        <span class="engine-hp">375</span>
+                        <span class="engine-unit">HP</span>
+                        <span class="engine-label">LS1 Stock</span>
+                    </button>
+                    <button class="engine-card" data-engine="240hp">
+                        <span class="engine-hp">240</span>
+                        <span class="engine-unit">HP</span>
+                        <span class="engine-label">Detuned</span>
+                    </button>
+                    <button class="engine-card" data-engine="420hp">
+                        <span class="engine-hp">420</span>
+                        <span class="engine-unit">HP</span>
+                        <span class="engine-label">Stage 1</span>
+                    </button>
+                    <button class="engine-card" data-engine="530hp">
+                        <span class="engine-hp">530</span>
+                        <span class="engine-unit">HP</span>
+                        <span class="engine-label">Built Motor</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- Generate -->
         <section id="generate-section" class="step">
             <button id="download-btn" class="btn-download btn-pulse-ready">
