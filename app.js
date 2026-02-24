@@ -114,13 +114,16 @@ function detectSystem(name) {
 // When physics track (1.75) is wider than OG model track, we push wheels OUT so the
 // 3D model's narrower body still lines up with the wider physics wheels.
 function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
-    let fOff = 0, rOff = 0;
+    // Extra padding to account for wider tires/rims in extended physics
+    const OFFSET_PAD = 0.04;
+
+    let fOff = OFFSET_PAD, rOff = OFFSET_PAD;
 
     if (ogFrontTrack < TRACK_BASELINE) {
-        fOff = (TRACK_BASELINE - ogFrontTrack) / 2;
+        fOff += (TRACK_BASELINE - ogFrontTrack) / 2;
     }
     if (ogRearTrack < TRACK_BASELINE) {
-        rOff = (TRACK_BASELINE - ogRearTrack) / 2;
+        rOff += (TRACK_BASELINE - ogRearTrack) / 2;
     }
 
     const fmt = v => v.toFixed(3);
