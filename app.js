@@ -421,6 +421,15 @@ function processOG() {
     document.getElementById('engine-section').classList.add('active');
     document.getElementById('generate-section').classList.add('active');
 
+    // Show tyre section
+    document.getElementById('tyre-section').classList.remove('hidden');
+    document.getElementById('tyre-section').classList.add('active');
+
+    // Parse OG tyres if available
+    if (State.ogFiles['tyres.ini']) {
+        State.ogParsed.tyres = parseINI(State.ogFiles['tyres.ini']);
+    }
+
     // Reset engine selection
     State.selectedEngine = '375hp';
     document.querySelectorAll('.engine-card').forEach(c => { c.classList.remove('selected'); c.classList.remove('just-selected'); });
@@ -458,6 +467,48 @@ async function generatePack() {
                 zip.file('data/' + fn, arr);
             } else {
                 zip.file('data/' + fn, content);
+            }
+        }
+
+        // Swap tyre radius if "Keep Original" is selected
+        const tyreMode = document.querySelector('input[name="tyre-mode"]:checked').value;
+        if (tyreMode === 'original' && State.ogParsed.tyres) {
+            const ogTyres = State.ogParsed.tyres;
+            // Get OG front/rear RADIUS, RIM_RADIUS, WIDTH
+            const ogFront = ogTyres.FRONT || {};
+            const ogRear = ogTyres.REAR || {};
+            if (ogFront.RADIUS || ogRear.RADIUS) {
+                let tyresContent = CAL.copy_paste_data['tyres.ini'];
+                // Replace RADIUS, RIM_RADIUS, WIDTH in all FRONT sections
+                const fRadius = ogFront.RADIUS;
+                const fRimRadius = ogFront.RIM_RADIUS;
+                const fWidth = ogFront.WIDTH;
+                const rRadius = ogRear.RADIUS;
+                const rRimRadius = ogRear.RIM_RADIUS;
+                const rWidth = ogRear.WIDTH;
+
+                // Split into lines and replace per-section
+                const lines = tyresContent.split('\n');
+                let currentSection = '';
+                for (let i = 0; i < lines.length; i++) {
+                    const trimmed = lines[i].trim();
+                    if (trimmed.startsWith('[') && trimmed.includes(']')) {
+                        currentSection = trimmed.slice(1, trimmed.indexOf(']'));
+                    }
+                    const isFront = currentSection.startsWith('FRONT');
+                    const isRear = currentSection.startsWith('REAR');
+                    if ((isFront || isRear) && !currentSection.startsWith('THERMAL')) {
+                        const src = isFront ? { RADIUS: fRadius, RIM_RADIUS: fRimRadius, WIDTH: fWidth }
+                                            : { RADIUS: rRadius, RIM_RADIUS: rRimRadius, WIDTH: rWidth };
+                        for (const key of ['RADIUS', 'RIM_RADIUS', 'WIDTH']) {
+                            if (src[key] && lines[i].startsWith(key + '=')) {
+                                const comment = lines[i].includes(';') ? lines[i].slice(lines[i].indexOf(';')) : '';
+                                lines[i] = `${key}=${src[key]}${comment ? '                     ' + comment : ''}`;
+                            }
+                        }
+                    }
+                }
+                zip.file('data/tyres.ini', lines.join('\n'));
             }
         }
 
