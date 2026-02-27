@@ -160,27 +160,27 @@
             </div>
             <div class="adjust-dropdown-body hidden" id="adjust-body">
                 <div class="adjust-slider-group">
-                    <div class="adjust-slider-row">
-                        <label class="adjust-label poke-title">Car Body Height (Visual)</label>
-                        <div class="poke-row">
-                            <div class="poke-btn-stack">
-                                <button class="poke-btn" onclick="adjHeight(-0.02500)">⏪</button>
-                                <span class="poke-btn-label">Lower</span>
+                    <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                        <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Car Body Height (Visual)</h4>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                <button onclick="adjHeight(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#00d9ff;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⏪</button>
+                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Lower</span>
                             </div>
-                            <div class="poke-btn-stack">
-                                <button class="poke-btn small" onclick="adjHeight(-0.003125)">◀</button>
-                                <span class="poke-btn-label">Lower</span>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                <button onclick="adjHeight(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#00d9ff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">◀</button>
+                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Lower</span>
                             </div>
-                            <div class="poke-display" onclick="resetHeight()">
-                                <span class="poke-value" id="adj-height-val">0"</span>
+                            <div onclick="resetHeight()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                                <span id="adj-height-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
                             </div>
-                            <div class="poke-btn-stack">
-                                <button class="poke-btn small" onclick="adjHeight(0.003125)">▶</button>
-                                <span class="poke-btn-label">Higher</span>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                <button onclick="adjHeight(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#00d9ff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">▶</button>
+                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Higher</span>
                             </div>
-                            <div class="poke-btn-stack">
-                                <button class="poke-btn" onclick="adjHeight(0.02500)">⏩</button>
-                                <span class="poke-btn-label">Higher</span>
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                                <button onclick="adjHeight(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#00d9ff;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⏩</button>
+                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Higher</span>
                             </div>
                         </div>
                     </div>
