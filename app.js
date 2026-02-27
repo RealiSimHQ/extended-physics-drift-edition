@@ -642,12 +642,26 @@ function hideLoading() {
 }
 
 // ─── Visual Adjustments ───
+let _adjHeight = 0;
+const ADJ_HEIGHT_MIN = -0.750;
+const ADJ_HEIGHT_MAX = 0.750;
+
+function adjHeight(delta) {
+    _adjHeight = Math.round((_adjHeight + delta) * 1e6) / 1e6;
+    _adjHeight = Math.max(ADJ_HEIGHT_MIN, Math.min(ADJ_HEIGHT_MAX, _adjHeight));
+    document.getElementById('adj-height-val').textContent = _adjHeight.toFixed(3);
+}
+
+function resetHeight() {
+    _adjHeight = 0;
+    document.getElementById('adj-height-val').textContent = '0.000';
+}
+
 function getAdjustments() {
-    const h = document.getElementById('adj-height');
     const p = document.getElementById('adj-pitch');
     const w = document.getElementById('adj-width');
     return {
-        height: h ? parseFloat(h.value) || 0 : 0,
+        height: _adjHeight,
         pitch: p ? parseFloat(p.value) || 0 : 0,
         width: w ? parseFloat(w.value) || 0 : 0
     };

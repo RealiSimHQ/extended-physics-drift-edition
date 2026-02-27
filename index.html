@@ -162,14 +162,25 @@
                 <div class="adjust-slider-group">
                     <div class="adjust-slider-row">
                         <label class="adjust-label">Ride Height</label>
-                        <div class="adjust-control">
-                            <span class="adjust-indicator low-label">Lower</span>
-                            <input type="range" id="adj-height" class="adjust-range cyan" min="-0.050" max="0.050" step="0.001" value="0">
-                            <span class="adjust-indicator high-label">Higher</span>
-                        </div>
-                        <div class="adjust-value-row">
-                            <span class="adjust-value" id="adj-height-val">0.000</span>
-                            <button class="adjust-reset-btn" onclick="resetSlider('adj-height')">Reset</button>
+                        <div class="adjust-arrows-row">
+                            <div class="adjust-arrow-group">
+                                <span class="arrow-group-label">1 inch</span>
+                                <div class="arrow-btn-pair">
+                                    <button class="arrow-btn down" onclick="adjHeight(-0.02500)">▼</button>
+                                    <button class="arrow-btn up" onclick="adjHeight(0.02500)">▲</button>
+                                </div>
+                            </div>
+                            <div class="adjust-center-value">
+                                <span class="adjust-value" id="adj-height-val">0.000</span>
+                                <button class="adjust-reset-btn" onclick="resetHeight()">Reset</button>
+                            </div>
+                            <div class="adjust-arrow-group">
+                                <span class="arrow-group-label">⅛ inch</span>
+                                <div class="arrow-btn-pair">
+                                    <button class="arrow-btn down small" onclick="adjHeight(-0.003125)">▼</button>
+                                    <button class="arrow-btn up small" onclick="adjHeight(0.003125)">▲</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
