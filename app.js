@@ -691,19 +691,19 @@ function adjRearWidth(delta) {
 function resetRearWidth() { _adjRearWidth = 0; document.getElementById('adj-rwidth-val').textContent = '0"'; }
 
 // Pitch rotation knob — displayed in whole degrees, stored as raw value
-let _pitchDegrees = 0; // degrees offset from base -0.35
+let _pitchDegrees = 0; // whole degrees offset from base -0.35
 
 function updatePitchUI() {
     var sign = _pitchDegrees > 0 ? '+' : '';
     document.getElementById('adj-pitch-val').textContent = sign + _pitchDegrees + '°';
-    // Visual: each degree = 3° of SVG rotation for visible effect
-    var angle = _pitchDegrees * 3;
+    // Visual: map degrees directly to SVG rotation
+    var angle = _pitchDegrees;
     document.getElementById('pitch-line').setAttribute('transform', 'rotate(' + angle + ', 60, 60)');
 }
 
 function adjPitch(delta) {
     _pitchDegrees = Math.round(_pitchDegrees + delta);
-    _pitchDegrees = Math.max(-30, Math.min(30, _pitchDegrees));
+    _pitchDegrees = Math.max(-20, Math.min(20, _pitchDegrees));
     updatePitchUI();
 }
 
@@ -727,10 +727,9 @@ function startPitchDrag(e) {
         var dx = pt.clientX - cx;
         var dy = pt.clientY - cy;
         var angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        // Clamp to ±90, convert to whole degrees (÷3 since visual is 3× multiplied)
-        angle = Math.max(-90, Math.min(90, angle));
-        _pitchDegrees = Math.round(angle / 3);
-        _pitchDegrees = Math.max(-30, Math.min(30, _pitchDegrees));
+        angle = Math.max(-20, Math.min(20, angle));
+        _pitchDegrees = Math.round(angle);
+        _pitchDegrees = Math.max(-20, Math.min(20, _pitchDegrees));
         updatePitchUI();
     }
     function onUp() {
@@ -749,7 +748,7 @@ function startPitchDrag(e) {
 function getAdjustments() {
     return {
         height: _adjHeight,
-        pitch: _pitchDegrees * 0.01,
+        pitch: _pitchDegrees * -0.01,
         frontWidth: _adjFrontWidth,
         rearWidth: _adjRearWidth
     };
