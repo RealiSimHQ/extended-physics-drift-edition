@@ -53,7 +53,7 @@
                 <button id="patreon-login-btn" class="btn-patreon" onclick="patreonLogin()">
                     Login with Patreon
                 </button>
-                <p class="gate-sub">Not a member? <a href="https://www.patreon.com/checkout/RealiSimHQ?rid=26118508" target="_blank">Join here</a></p>
+                <p class="gate-sub">Not a member? <a href="https://www.patreon.com/c/u80119694" target="_blank">Join here</a></p>
             </div>
         </section>
 
@@ -150,6 +150,62 @@
                 </svg>
                 Generate Extended Physics
             </button>
+        </section>
+
+        <!-- Visual Adjustments (shown after first generation) -->
+        <section id="adjust-section" class="step hidden">
+            <div class="adjust-panel">
+                <h3 class="adjust-title">Visual Adjustments</h3>
+                <p class="adjust-subtitle">Fine-tune your car's visual stance after generating</p>
+
+                <div class="adjust-slider-group">
+                    <div class="adjust-slider-row">
+                        <label class="adjust-label">Ride Height</label>
+                        <div class="adjust-control">
+                            <span class="adjust-indicator low-label">Lower</span>
+                            <input type="range" id="adj-height" class="adjust-range cyan" min="-0.050" max="0.050" step="0.001" value="0">
+                            <span class="adjust-indicator high-label">Higher</span>
+                        </div>
+                        <div class="adjust-value-row">
+                            <span class="adjust-value" id="adj-height-val">0.000</span>
+                            <button class="adjust-reset-btn" onclick="resetSlider('adj-height')">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="adjust-slider-row">
+                        <label class="adjust-label">Pitch Rotation</label>
+                        <div class="adjust-control">
+                            <span class="adjust-indicator low-label">Front Down</span>
+                            <input type="range" id="adj-pitch" class="adjust-range purple" min="-1.00" max="1.00" step="0.01" value="0">
+                            <span class="adjust-indicator high-label">Front Up</span>
+                        </div>
+                        <div class="adjust-value-row">
+                            <span class="adjust-value" id="adj-pitch-val">0.00</span>
+                            <button class="adjust-reset-btn" onclick="resetSlider('adj-pitch')">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="adjust-slider-row">
+                        <label class="adjust-label">Track Width</label>
+                        <div class="adjust-control">
+                            <span class="adjust-indicator low-label">Narrower</span>
+                            <input type="range" id="adj-width" class="adjust-range gold" min="-0.100" max="0.100" step="0.001" value="0">
+                            <span class="adjust-indicator high-label">Wider</span>
+                        </div>
+                        <div class="adjust-value-row">
+                            <span class="adjust-value" id="adj-width-val">0.000</span>
+                            <button class="adjust-reset-btn" onclick="resetSlider('adj-width')">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="regenerate-btn" class="btn-regenerate" onclick="regeneratePack()">
+                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Re-Generate with Adjustments
+                </button>
+            </div>
         </section>
 
         <!-- Download modal injected by JS -->

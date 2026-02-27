@@ -45,7 +45,7 @@ function initPatreonGate() {
     } else if (!hasUsedTrial()) {
         // Free trial — show tool with trial banner
         gate.innerHTML = `<div class="gate-card" style="border-color:var(--accent-cyan);padding:20px;">
-            <p style="margin:0;color:var(--accent-cyan);">🎁 <strong>Free Trial</strong> — Generate one physics pack free. <a href="https://www.patreon.com/checkout/RealiSimHQ?rid=26118508" target="_blank" style="color:var(--accent-gold);">Subscribe for unlimited access</a></p>
+            <p style="margin:0;color:var(--accent-cyan);">🎁 <strong>Free Trial</strong> — Generate one physics pack free. <a href="https://www.patreon.com/c/u80119694" target="_blank" style="color:var(--accent-gold);">Subscribe for unlimited access</a></p>
         </div>`;
     } else {
         // Trial used, must subscribe
@@ -114,8 +114,9 @@ function detectSystem(name) {
 // ─── GRAPHICS_OFFSETS — compensate for +0.25 track addition ───
 // All cars get +0.25 added to track → offset = 0.25 × 0.277 = 0.069
 // Signs: negative LF/LR = outward left, positive RF/RR = outward right
-function calcGraphicsOffsets() {
-    const offset = TRACK_ADDITION * OFFSET_K;
+function calcGraphicsOffsets(widthAdj) {
+    widthAdj = widthAdj || 0;
+    const offset = TRACK_ADDITION * OFFSET_K + widthAdj;
     const fmt = v => v.toFixed(3);
     return {
         WHEEL_LF: fmt(-offset),  SUSP_LF: fmt(-offset),
@@ -126,7 +127,8 @@ function calcGraphicsOffsets() {
 }
 
 // ─── Build car.ini ───
-function buildCarIni(og) {
+function buildCarIni(og, adj) {
+    adj = adj || {};
     const tpl = CAL.car_template;
     const parsed = parseINI(tpl);
     const ogCar = og.car;
@@ -154,10 +156,13 @@ function buildCarIni(og) {
 
     // BASIC — OG geometry, template physics
     out += '[BASIC]\n';
-    const ogY = parts[1] || '0';
+    const ogY = parseFloat(parts[1] || '0');
+    const finalY = (ogY + (adj.height || 0)).toFixed(3);
     const adjZ = (parseFloat(ogZ) - 0.01).toFixed(3);
-    out += `GRAPHICS_OFFSET=${ogX}, ${ogY}, ${adjZ}\n`;
-    out += `GRAPHICS_PITCH_ROTATION=-0.35\n`;
+    out += `GRAPHICS_OFFSET=${ogX}, ${finalY}, ${adjZ}\n`;
+    const basePitch = -0.35;
+    const finalPitch = (basePitch + (adj.pitch || 0)).toFixed(2);
+    out += `GRAPHICS_PITCH_ROTATION=${finalPitch}\n`;
     out += `TOTALMASS=1315.48\n`;
     out += `INERTIA=${ogCar.BASIC?.INERTIA || ''}\n\n`;
 
@@ -214,7 +219,8 @@ function buildCarIni(og) {
 }
 
 // ─── Build suspensions.ini ───
-function buildSuspensionsIni(og, system) {
+function buildSuspensionsIni(og, system, adj) {
+    adj = adj || {};
     const template = system === 'standard' ? CAL.suspensions_standard : CAL.suspensions_metric;
     const ogSusp = og.suspensions;
 
@@ -225,8 +231,8 @@ function buildSuspensionsIni(og, system) {
     const frontTrack = ogFrontTrack + TRACK_ADDITION;
     const rearTrack = ogRearTrack + TRACK_ADDITION;
 
-    // Compute GRAPHICS_OFFSETS (compensates for the +0.25 addition)
-    const offsets = calcGraphicsOffsets();
+    // Compute GRAPHICS_OFFSETS (compensates for the +0.25 addition + width adj)
+    const offsets = calcGraphicsOffsets(adj.width || 0);
 
     // Replace placeholders in the template
     let out = template;
@@ -444,11 +450,12 @@ async function generatePack() {
         const zip = new JSZip();
 
         // Build car.ini
-        const carIni = buildCarIni(State.ogParsed);
+        const adj = getAdjustments();
+        const carIni = buildCarIni(State.ogParsed, adj);
         zip.file('data/car.ini', carIni);
 
         // Build suspensions.ini
-        const suspIni = buildSuspensionsIni(State.ogParsed, system);
+        const suspIni = buildSuspensionsIni(State.ogParsed, system, adj);
         zip.file('data/suspensions.ini', suspIni);
 
         // Copy all files from "Copy Paste" data folder
@@ -564,6 +571,7 @@ async function generatePack() {
         const carName = (State.ogMeta.carName || 'car').replace(/[^a-zA-Z0-9_-]/g, '_');
         if (!checkPatreonSession()) markTrialUsed();
         showDownloadModal(blob, `${carName}_ExtendedDrift.zip`);
+        showAdjustPanel();
 
     } catch (e) {
         console.error('Generation error:', e);
@@ -634,6 +642,48 @@ function hideLoading() {
     document.getElementById('loading-overlay').classList.add('hidden');
 }
 
+// ─── Visual Adjustments ───
+function getAdjustments() {
+    const h = document.getElementById('adj-height');
+    const p = document.getElementById('adj-pitch');
+    const w = document.getElementById('adj-width');
+    return {
+        height: h ? parseFloat(h.value) || 0 : 0,
+        pitch: p ? parseFloat(p.value) || 0 : 0,
+        width: w ? parseFloat(w.value) || 0 : 0
+    };
+}
+
+function resetSlider(id) {
+    const el = document.getElementById(id);
+    if (el) { el.value = 0; el.dispatchEvent(new Event('input')); }
+}
+
+function showAdjustPanel() {
+    const sec = document.getElementById('adjust-section');
+    if (sec) sec.classList.remove('hidden');
+}
+
+function initAdjustSliders() {
+    ['adj-height', 'adj-pitch', 'adj-width'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const valEl = document.getElementById(id + '-val');
+        el.addEventListener('input', () => {
+            const v = parseFloat(el.value);
+            if (id === 'adj-pitch') {
+                valEl.textContent = v.toFixed(2);
+            } else {
+                valEl.textContent = v.toFixed(3);
+            }
+        });
+    });
+}
+
+async function regeneratePack() {
+    await generatePack();
+}
+
 // ─── Event setup ───
 document.addEventListener('DOMContentLoaded', () => {
     const dropZone = document.getElementById('drop-zone');
@@ -674,6 +724,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('engine-ready');
         });
     });
+
+    // Init visual adjustment sliders
+    initAdjustSliders();
 
     // Generate
     document.getElementById('download-btn').addEventListener('click', generatePack);
