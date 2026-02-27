@@ -64,7 +64,8 @@ const AMERICAN_MAKES = [
     'firebird', 'trans am', 'gto', 'plymouth', 'barracuda', 'cuda'
 ];
 
-const TRACK_BASELINE = 1.75; // meters
+const TRACK_ADDITION = 0.25;  // Add to all OG tracks
+const OFFSET_K = 0.277;        // Graphics offset calibration factor
 
 const State = {
     ogFiles: {},
@@ -109,27 +110,17 @@ function detectSystem(name) {
     return 'metric';
 }
 
-// ─── GRAPHICS_OFFSETS — compensate if OG track < baseline ───
-// Derived from in-game calibration: offset ≈ (baseline - ogTrack) × OFFSET_K
+// ─── GRAPHICS_OFFSETS — compensate for +0.25 track addition ───
+// All cars get +0.25 added to track → offset = 0.25 × 0.277 = 0.069
 // Signs: negative LF/LR = outward left, positive RF/RR = outward right
-const OFFSET_K = 0.277;
-
-function calcGraphicsOffsets(ogFrontTrack, ogRearTrack) {
-    let fOff = 0, rOff = 0;
-
-    if (ogFrontTrack < TRACK_BASELINE) {
-        fOff = (TRACK_BASELINE - ogFrontTrack) * OFFSET_K;
-    }
-    if (ogRearTrack < TRACK_BASELINE) {
-        rOff = (TRACK_BASELINE - ogRearTrack) * OFFSET_K;
-    }
-
+function calcGraphicsOffsets() {
+    const offset = TRACK_ADDITION * OFFSET_K;
     const fmt = v => v.toFixed(3);
     return {
-        WHEEL_LF: fmt(-fOff),  SUSP_LF: fmt(-fOff),
-        WHEEL_RF: fmt(fOff),   SUSP_RF: fmt(fOff),
-        WHEEL_LR: fmt(-rOff),  SUSP_LR: fmt(-rOff),
-        WHEEL_RR: fmt(rOff),   SUSP_RR: fmt(rOff)
+        WHEEL_LF: fmt(-offset),  SUSP_LF: fmt(-offset),
+        WHEEL_RF: fmt(offset),   SUSP_RF: fmt(offset),
+        WHEEL_LR: fmt(-offset),  SUSP_LR: fmt(-offset),
+        WHEEL_RR: fmt(offset),   SUSP_RR: fmt(offset)
     };
 }
 
@@ -229,12 +220,12 @@ function buildSuspensionsIni(og, system) {
     const ogFrontTrack = parseFloat(ogSusp.FRONT?.TRACK || '1.5');
     const ogRearTrack = parseFloat(ogSusp.REAR?.TRACK || '1.5');
 
-    // Clamp tracks to baseline minimum
-    const frontTrack = Math.max(ogFrontTrack, TRACK_BASELINE);
-    const rearTrack = Math.max(ogRearTrack, TRACK_BASELINE);
+    // Add 0.25 to all tracks
+    const frontTrack = ogFrontTrack + TRACK_ADDITION;
+    const rearTrack = ogRearTrack + TRACK_ADDITION;
 
-    // Compute GRAPHICS_OFFSETS (compensates if OG track was narrower)
-    const offsets = calcGraphicsOffsets(ogFrontTrack, ogRearTrack);
+    // Compute GRAPHICS_OFFSETS (compensates for the +0.25 addition)
+    const offsets = calcGraphicsOffsets();
 
     // Replace placeholders in the template
     let out = template;
