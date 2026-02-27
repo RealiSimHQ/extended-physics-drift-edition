@@ -646,15 +646,30 @@ let _adjHeight = 0;
 const ADJ_HEIGHT_MIN = -0.750;
 const ADJ_HEIGHT_MAX = 0.750;
 
+function heightToInches(val) {
+    const inches = val / 0.02500;
+    const whole = Math.trunc(inches);
+    const frac = Math.abs(inches - whole);
+    const eighths = Math.round(frac * 8);
+    if (eighths === 0) return `${whole}"`;
+    if (eighths === 8) return `${whole + Math.sign(inches)}"`;
+    // Simplify fraction
+    const g = eighths % 2 === 0 ? (eighths % 4 === 0 ? 4 : 2) : 1;
+    const num = eighths / g;
+    const den = 8 / g;
+    const sign = val < 0 && whole === 0 ? '-' : '';
+    return whole !== 0 ? `${whole} ${num}/${den}"` : `${sign}${num}/${den}"`;
+}
+
 function adjHeight(delta) {
     _adjHeight = Math.round((_adjHeight + delta) * 1e6) / 1e6;
     _adjHeight = Math.max(ADJ_HEIGHT_MIN, Math.min(ADJ_HEIGHT_MAX, _adjHeight));
-    document.getElementById('adj-height-val').textContent = _adjHeight.toFixed(3);
+    document.getElementById('adj-height-val').textContent = heightToInches(_adjHeight);
 }
 
 function resetHeight() {
     _adjHeight = 0;
-    document.getElementById('adj-height-val').textContent = '0.000';
+    document.getElementById('adj-height-val').textContent = '0"';
 }
 
 function getAdjustments() {
