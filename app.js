@@ -118,8 +118,8 @@ function calcGraphicsOffsets(frontWidthAdj, rearWidthAdj) {
     frontWidthAdj = frontWidthAdj || 0;
     rearWidthAdj = rearWidthAdj || 0;
     const baseOffset = TRACK_ADDITION * OFFSET_K;
-    const fOff = baseOffset + frontWidthAdj;
-    const rOff = baseOffset + rearWidthAdj;
+    const fOff = baseOffset - frontWidthAdj;
+    const rOff = baseOffset - rearWidthAdj;
     const fmt = v => v.toFixed(3);
     return {
         WHEEL_LF: fmt(-fOff),  SUSP_LF: fmt(-fOff),
@@ -690,26 +690,25 @@ function adjRearWidth(delta) {
 }
 function resetRearWidth() { _adjRearWidth = 0; document.getElementById('adj-rwidth-val').textContent = '0"'; }
 
-// Pitch rotation knob
-let _adjPitch = -0.35;
-const PITCH_MIN = -1.35;
-const PITCH_MAX = 0.65;
+// Pitch rotation knob — displayed in whole degrees, stored as raw value
+let _pitchDegrees = 0; // degrees offset from base -0.35
 
 function updatePitchUI() {
-    document.getElementById('adj-pitch-val').textContent = _adjPitch.toFixed(2) + '°';
-    // Map pitch to rotation angle: -0.35 = 0deg (level), range ±1.0 maps to ±45deg
-    var angle = (_adjPitch - (-0.35)) * 45;
+    var sign = _pitchDegrees > 0 ? '+' : '';
+    document.getElementById('adj-pitch-val').textContent = sign + _pitchDegrees + '°';
+    // Visual: each degree = 3° of SVG rotation for visible effect
+    var angle = _pitchDegrees * 3;
     document.getElementById('pitch-line').setAttribute('transform', 'rotate(' + angle + ', 60, 60)');
 }
 
 function adjPitch(delta) {
-    _adjPitch = Math.round((_adjPitch + delta) * 1000) / 1000;
-    _adjPitch = Math.max(PITCH_MIN, Math.min(PITCH_MAX, _adjPitch));
+    _pitchDegrees = Math.round(_pitchDegrees + delta);
+    _pitchDegrees = Math.max(-30, Math.min(30, _pitchDegrees));
     updatePitchUI();
 }
 
 function resetPitch() {
-    _adjPitch = -0.35;
+    _pitchDegrees = 0;
     updatePitchUI();
 }
 
@@ -728,11 +727,10 @@ function startPitchDrag(e) {
         var dx = pt.clientX - cx;
         var dy = pt.clientY - cy;
         var angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        // Clamp angle to ±45 degrees
-        angle = Math.max(-45, Math.min(45, angle));
-        // Convert angle back to pitch value
-        _adjPitch = Math.round(((angle / 45) + (-0.35)) * 100) / 100;
-        _adjPitch = Math.max(PITCH_MIN, Math.min(PITCH_MAX, _adjPitch));
+        // Clamp to ±90, convert to whole degrees (÷3 since visual is 3× multiplied)
+        angle = Math.max(-90, Math.min(90, angle));
+        _pitchDegrees = Math.round(angle / 3);
+        _pitchDegrees = Math.max(-30, Math.min(30, _pitchDegrees));
         updatePitchUI();
     }
     function onUp() {
@@ -751,7 +749,7 @@ function startPitchDrag(e) {
 function getAdjustments() {
     return {
         height: _adjHeight,
-        pitch: _adjPitch - (-0.35),
+        pitch: _pitchDegrees * 0.01,
         frontWidth: _adjFrontWidth,
         rearWidth: _adjRearWidth
     };
