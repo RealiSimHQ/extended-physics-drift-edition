@@ -748,7 +748,7 @@ function startPitchDrag(e) {
 function getAdjustments() {
     return {
         height: _adjHeight,
-        pitch: _pitchDegrees * -0.01,
+        pitch: _pitchDegrees * -0.10,
         frontWidth: _adjFrontWidth,
         rearWidth: _adjRearWidth
     };
