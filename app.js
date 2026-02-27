@@ -163,7 +163,8 @@ function buildCarIni(og, adj) {
     const finalY = (ogY + (adj.height || 0)).toFixed(3);
     const adjZ = (parseFloat(ogZ) - 0.01).toFixed(3);
     out += `GRAPHICS_OFFSET=${ogX}, ${finalY}, ${adjZ}\n`;
-    out += `GRAPHICS_PITCH_ROTATION=-0.35\n`;
+    const finalPitch = (-0.35 + (adj.pitch || 0)).toFixed(2);
+    out += `GRAPHICS_PITCH_ROTATION=${finalPitch}\n`;
     out += `TOTALMASS=1315.48\n`;
     out += `INERTIA=${ogCar.BASIC?.INERTIA || ''}\n\n`;
 
@@ -689,9 +690,68 @@ function adjRearWidth(delta) {
 }
 function resetRearWidth() { _adjRearWidth = 0; document.getElementById('adj-rwidth-val').textContent = '0"'; }
 
+// Pitch rotation knob
+let _adjPitch = -0.35;
+const PITCH_MIN = -1.35;
+const PITCH_MAX = 0.65;
+
+function updatePitchUI() {
+    document.getElementById('adj-pitch-val').textContent = _adjPitch.toFixed(2);
+    // Map pitch to rotation angle: -0.35 = 0deg (level), range ±1.0 maps to ±45deg
+    var angle = (_adjPitch - (-0.35)) * 45;
+    document.getElementById('pitch-line').setAttribute('transform', 'rotate(' + angle + ', 60, 60)');
+}
+
+function adjPitch(delta) {
+    _adjPitch = Math.round((_adjPitch + delta) * 100) / 100;
+    _adjPitch = Math.max(PITCH_MIN, Math.min(PITCH_MAX, _adjPitch));
+    updatePitchUI();
+}
+
+function resetPitch() {
+    _adjPitch = -0.35;
+    updatePitchUI();
+}
+
+var _pitchDragging = false;
+function startPitchDrag(e) {
+    e.preventDefault();
+    _pitchDragging = true;
+    var knob = document.getElementById('pitch-knob');
+    var rect = knob.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+
+    function onMove(ev) {
+        if (!_pitchDragging) return;
+        var pt = ev.touches ? ev.touches[0] : ev;
+        var dx = pt.clientX - cx;
+        var dy = pt.clientY - cy;
+        var angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        // Clamp angle to ±45 degrees
+        angle = Math.max(-45, Math.min(45, angle));
+        // Convert angle back to pitch value
+        _adjPitch = Math.round(((angle / 45) + (-0.35)) * 100) / 100;
+        _adjPitch = Math.max(PITCH_MIN, Math.min(PITCH_MAX, _adjPitch));
+        updatePitchUI();
+    }
+    function onUp() {
+        _pitchDragging = false;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onUp);
+}
+
 function getAdjustments() {
     return {
         height: _adjHeight,
+        pitch: _adjPitch - (-0.35),
         frontWidth: _adjFrontWidth,
         rearWidth: _adjRearWidth
     };
