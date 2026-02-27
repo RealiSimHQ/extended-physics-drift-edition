@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extended Drift Physics Generator | RealiSimHQ</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
     <!-- RealiSimHQ Tool Nav (shown for authenticated patrons) -->
@@ -159,57 +159,50 @@
                 <span class="adjust-dropdown-arrow" id="adjust-arrow">▼</span>
             </div>
             <div class="adjust-dropdown-body hidden" id="adjust-body">
-                <div class="adjust-slider-group">
+                <div style="display:flex;flex-direction:column;gap:16px;">
+
+                    <!-- Car Body Height -->
                     <div style="background:#0f1419;border-radius:16px;padding:20px;">
                         <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Car Body Height (Visual)</h4>
                         <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                                <button onclick="adjHeight(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#00d9ff;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⏪</button>
-                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Lower</span>
-                            </div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                                <button onclick="adjHeight(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#00d9ff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">◀</button>
-                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Lower</span>
-                            </div>
+                            <button onclick="adjHeight(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                            <button onclick="adjHeight(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
                             <div onclick="resetHeight()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                                 <span id="adj-height-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
                             </div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                                <button onclick="adjHeight(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#00d9ff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">▶</button>
-                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Higher</span>
-                            </div>
-                            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                                <button onclick="adjHeight(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#00d9ff;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⏩</button>
-                                <span style="font-size:0.6rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Higher</span>
-                            </div>
+                            <button onclick="adjHeight(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                            <button onclick="adjHeight(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
                         </div>
                     </div>
 
-                    <div class="adjust-slider-row">
-                        <label class="adjust-label">Pitch Rotation</label>
-                        <div class="adjust-control">
-                            <span class="adjust-indicator low-label">Front Down</span>
-                            <input type="range" id="adj-pitch" class="adjust-range purple" min="-1.00" max="1.00" step="0.01" value="0">
-                            <span class="adjust-indicator high-label">Front Up</span>
-                        </div>
-                        <div class="adjust-value-row">
-                            <span class="adjust-value" id="adj-pitch-val">0.00</span>
-                            <button class="adjust-reset-btn" onclick="resetSlider('adj-pitch')">Reset</button>
+                    <!-- Front Track Width -->
+                    <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                        <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Front Track Width (Visual)</h4>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                            <button onclick="adjFrontWidth(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                            <button onclick="adjFrontWidth(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                            <div onclick="resetFrontWidth()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                                <span id="adj-fwidth-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
+                            </div>
+                            <button onclick="adjFrontWidth(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                            <button onclick="adjFrontWidth(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
                         </div>
                     </div>
 
-                    <div class="adjust-slider-row">
-                        <label class="adjust-label">Track Width</label>
-                        <div class="adjust-control">
-                            <span class="adjust-indicator low-label">Narrower</span>
-                            <input type="range" id="adj-width" class="adjust-range gold" min="-0.100" max="0.100" step="0.001" value="0">
-                            <span class="adjust-indicator high-label">Wider</span>
-                        </div>
-                        <div class="adjust-value-row">
-                            <span class="adjust-value" id="adj-width-val">0.000</span>
-                            <button class="adjust-reset-btn" onclick="resetSlider('adj-width')">Reset</button>
+                    <!-- Rear Track Width -->
+                    <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                        <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Rear Track Width (Visual)</h4>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                            <button onclick="adjRearWidth(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                            <button onclick="adjRearWidth(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                            <div onclick="resetRearWidth()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                                <span id="adj-rwidth-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
+                            </div>
+                            <button onclick="adjRearWidth(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                            <button onclick="adjRearWidth(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -228,6 +221,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="data.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>

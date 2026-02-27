@@ -114,15 +114,18 @@ function detectSystem(name) {
 // ─── GRAPHICS_OFFSETS — compensate for +0.25 track addition ───
 // All cars get +0.25 added to track → offset = 0.25 × 0.277 = 0.069
 // Signs: negative LF/LR = outward left, positive RF/RR = outward right
-function calcGraphicsOffsets(widthAdj) {
-    widthAdj = widthAdj || 0;
-    const offset = TRACK_ADDITION * OFFSET_K + widthAdj;
+function calcGraphicsOffsets(frontWidthAdj, rearWidthAdj) {
+    frontWidthAdj = frontWidthAdj || 0;
+    rearWidthAdj = rearWidthAdj || 0;
+    const baseOffset = TRACK_ADDITION * OFFSET_K;
+    const fOff = baseOffset + frontWidthAdj;
+    const rOff = baseOffset + rearWidthAdj;
     const fmt = v => v.toFixed(3);
     return {
-        WHEEL_LF: fmt(-offset),  SUSP_LF: fmt(-offset),
-        WHEEL_RF: fmt(offset),   SUSP_RF: fmt(offset),
-        WHEEL_LR: fmt(-offset),  SUSP_LR: fmt(-offset),
-        WHEEL_RR: fmt(offset),   SUSP_RR: fmt(offset)
+        WHEEL_LF: fmt(-fOff),  SUSP_LF: fmt(-fOff),
+        WHEEL_RF: fmt(fOff),   SUSP_RF: fmt(fOff),
+        WHEEL_LR: fmt(-rOff),  SUSP_LR: fmt(-rOff),
+        WHEEL_RR: fmt(rOff),   SUSP_RR: fmt(rOff)
     };
 }
 
@@ -160,9 +163,7 @@ function buildCarIni(og, adj) {
     const finalY = (ogY + (adj.height || 0)).toFixed(3);
     const adjZ = (parseFloat(ogZ) - 0.01).toFixed(3);
     out += `GRAPHICS_OFFSET=${ogX}, ${finalY}, ${adjZ}\n`;
-    const basePitch = -0.35;
-    const finalPitch = (basePitch + (adj.pitch || 0)).toFixed(2);
-    out += `GRAPHICS_PITCH_ROTATION=${finalPitch}\n`;
+    out += `GRAPHICS_PITCH_ROTATION=-0.35\n`;
     out += `TOTALMASS=1315.48\n`;
     out += `INERTIA=${ogCar.BASIC?.INERTIA || ''}\n\n`;
 
@@ -232,7 +233,7 @@ function buildSuspensionsIni(og, system, adj) {
     const rearTrack = ogRearTrack + TRACK_ADDITION;
 
     // Compute GRAPHICS_OFFSETS (compensates for the +0.25 addition + width adj)
-    const offsets = calcGraphicsOffsets(adj.width || 0);
+    const offsets = calcGraphicsOffsets(adj.frontWidth || 0, adj.rearWidth || 0);
 
     // Replace placeholders in the template
     let out = template;
@@ -643,69 +644,67 @@ function hideLoading() {
 
 // ─── Visual Adjustments ───
 let _adjHeight = 0;
-const ADJ_HEIGHT_MIN = -0.750;
-const ADJ_HEIGHT_MAX = 0.750;
+let _adjFrontWidth = 0;
+let _adjRearWidth = 0;
+const ADJ_LIMIT = 0.750;
 
-function heightToInches(val) {
-    const inches = val / 0.02500;
-    const whole = Math.trunc(inches);
-    const frac = Math.abs(inches - whole);
-    const eighths = Math.round(frac * 8);
-    if (eighths === 0) return `${whole}"`;
-    if (eighths === 8) return `${whole + Math.sign(inches)}"`;
+function toInches(val) {
+    var inches = val / 0.02500;
+    var neg = inches < 0;
+    var abs = Math.abs(inches);
+    var whole = Math.floor(abs);
+    var eighths = Math.round((abs - whole) * 8);
+    if (eighths === 8) { whole++; eighths = 0; }
     // Simplify fraction
-    const g = eighths % 2 === 0 ? (eighths % 4 === 0 ? 4 : 2) : 1;
-    const num = eighths / g;
-    const den = 8 / g;
-    const sign = val < 0 && whole === 0 ? '-' : '';
-    return whole !== 0 ? `${whole} ${num}/${den}"` : `${sign}${num}/${den}"`;
+    var num = eighths, den = 8;
+    if (num > 0) {
+        if (num % 4 === 0) { num /= 4; den /= 4; }
+        else if (num % 2 === 0) { num /= 2; den /= 2; }
+    }
+    var sign = neg ? '-' : '';
+    if (whole === 0 && num === 0) return '0"';
+    if (num === 0) return sign + whole + '"';
+    if (whole === 0) return sign + num + '/' + den + '"';
+    return sign + whole + ' ' + num + '/' + den + '"';
 }
 
 function adjHeight(delta) {
     _adjHeight = Math.round((_adjHeight + delta) * 1e6) / 1e6;
-    _adjHeight = Math.max(ADJ_HEIGHT_MIN, Math.min(ADJ_HEIGHT_MAX, _adjHeight));
-    document.getElementById('adj-height-val').textContent = heightToInches(_adjHeight);
+    _adjHeight = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjHeight));
+    document.getElementById('adj-height-val').textContent = toInches(_adjHeight);
 }
+function resetHeight() { _adjHeight = 0; document.getElementById('adj-height-val').textContent = '0"'; }
 
-function resetHeight() {
-    _adjHeight = 0;
-    document.getElementById('adj-height-val').textContent = '0"';
+function adjFrontWidth(delta) {
+    _adjFrontWidth = Math.round((_adjFrontWidth + delta) * 1e6) / 1e6;
+    _adjFrontWidth = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjFrontWidth));
+    document.getElementById('adj-fwidth-val').textContent = toInches(_adjFrontWidth);
 }
+function resetFrontWidth() { _adjFrontWidth = 0; document.getElementById('adj-fwidth-val').textContent = '0"'; }
+
+function adjRearWidth(delta) {
+    _adjRearWidth = Math.round((_adjRearWidth + delta) * 1e6) / 1e6;
+    _adjRearWidth = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjRearWidth));
+    document.getElementById('adj-rwidth-val').textContent = toInches(_adjRearWidth);
+}
+function resetRearWidth() { _adjRearWidth = 0; document.getElementById('adj-rwidth-val').textContent = '0"'; }
 
 function getAdjustments() {
-    const p = document.getElementById('adj-pitch');
-    const w = document.getElementById('adj-width');
     return {
         height: _adjHeight,
-        pitch: p ? parseFloat(p.value) || 0 : 0,
-        width: w ? parseFloat(w.value) || 0 : 0
+        frontWidth: _adjFrontWidth,
+        rearWidth: _adjRearWidth
     };
 }
 
-function resetSlider(id) {
-    const el = document.getElementById(id);
-    if (el) { el.value = 0; el.dispatchEvent(new Event('input')); }
-}
-
 function initAdjustSliders() {
-    // Toggle dropdown
-    const toggle = document.getElementById('adjust-toggle');
+    var toggle = document.getElementById('adjust-toggle');
     if (toggle) {
-        toggle.addEventListener('click', () => {
+        toggle.addEventListener('click', function() {
             document.getElementById('adjust-body').classList.toggle('hidden');
             document.getElementById('adjust-arrow').classList.toggle('open');
         });
     }
-    // Slider value displays
-    ['adj-height', 'adj-pitch', 'adj-width'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const valEl = document.getElementById(id + '-val');
-        el.addEventListener('input', () => {
-            const v = parseFloat(el.value);
-            valEl.textContent = id === 'adj-pitch' ? v.toFixed(2) : v.toFixed(3);
-        });
-    });
 }
 
 // ─── Event setup ───
