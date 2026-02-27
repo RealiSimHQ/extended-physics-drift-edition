@@ -696,14 +696,14 @@ const PITCH_MIN = -1.35;
 const PITCH_MAX = 0.65;
 
 function updatePitchUI() {
-    document.getElementById('adj-pitch-val').textContent = _adjPitch.toFixed(2);
+    document.getElementById('adj-pitch-val').textContent = _adjPitch.toFixed(2) + '°';
     // Map pitch to rotation angle: -0.35 = 0deg (level), range ±1.0 maps to ±45deg
     var angle = (_adjPitch - (-0.35)) * 45;
     document.getElementById('pitch-line').setAttribute('transform', 'rotate(' + angle + ', 60, 60)');
 }
 
 function adjPitch(delta) {
-    _adjPitch = Math.round((_adjPitch + delta) * 100) / 100;
+    _adjPitch = Math.round((_adjPitch + delta) * 1000) / 1000;
     _adjPitch = Math.max(PITCH_MIN, Math.min(PITCH_MAX, _adjPitch));
     updatePitchUI();
 }
