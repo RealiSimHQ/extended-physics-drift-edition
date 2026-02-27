@@ -544,65 +544,68 @@ header h1 {
 .adjust-range.purple::-moz-range-thumb { background: var(--accent-purple); box-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
 .adjust-range.gold::-moz-range-thumb { background: var(--accent-gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
 
-/* ─── Arrow Buttons for Ride Height ─── */
-.adjust-arrows-row {
+/* ─── Poke-Style Buttons ─── */
+.poke-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 8px;
 }
-.adjust-arrow-group {
+.poke-btn-stack {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
 }
-.arrow-group-label {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 600;
-}
-.arrow-btn-pair {
-    display: flex;
-    gap: 6px;
-}
-.arrow-btn {
-    width: 40px;
-    height: 36px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-dark);
+.poke-btn {
+    width: 52px;
+    height: 52px;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    background: #0f1419;
     color: var(--accent-cyan);
-    font-size: 1rem;
+    font-size: 1.4rem;
+    font-weight: 300;
     cursor: pointer;
     transition: all 0.15s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.arrow-btn.small {
-    width: 34px;
-    height: 30px;
-    font-size: 0.8rem;
+.poke-btn.small {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
 }
-.arrow-btn:hover {
-    background: #1e293b;
+.poke-btn:hover {
+    background: #1a222c;
     border-color: var(--accent-cyan);
-    box-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.25);
 }
-.arrow-btn:active {
-    transform: scale(0.95);
+.poke-btn:active { transform: scale(0.93); }
+.poke-btn-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-.arrow-btn.up { color: #4ade80; }
-.arrow-btn.up:hover { border-color: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
-.arrow-btn.down { color: #f87171; }
-.arrow-btn.down:hover { border-color: #f87171; box-shadow: 0 0 8px rgba(248, 113, 113, 0.3); }
-.adjust-center-value {
+.poke-display {
+    flex: 1;
+    max-width: 160px;
+    height: 52px;
+    background: #0f1419;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    min-width: 70px;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+.poke-display:hover { border-color: var(--accent-cyan); }
+.poke-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-cyan);
 }

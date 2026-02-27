@@ -162,24 +162,25 @@
                 <div class="adjust-slider-group">
                     <div class="adjust-slider-row">
                         <label class="adjust-label">Ride Height</label>
-                        <div class="adjust-arrows-row">
-                            <div class="adjust-arrow-group">
-                                <span class="arrow-group-label">1 inch</span>
-                                <div class="arrow-btn-pair">
-                                    <button class="arrow-btn down" onclick="adjHeight(-0.02500)">▼</button>
-                                    <button class="arrow-btn up" onclick="adjHeight(0.02500)">▲</button>
-                                </div>
+                        <div class="poke-row">
+                            <div class="poke-btn-stack">
+                                <button class="poke-btn" onclick="adjHeight(-0.02500)">−</button>
+                                <span class="poke-btn-label">1"</span>
                             </div>
-                            <div class="adjust-center-value">
-                                <span class="adjust-value" id="adj-height-val">0.000</span>
-                                <button class="adjust-reset-btn" onclick="resetHeight()">Reset</button>
+                            <div class="poke-btn-stack">
+                                <button class="poke-btn small" onclick="adjHeight(-0.003125)">−</button>
+                                <span class="poke-btn-label">⅛"</span>
                             </div>
-                            <div class="adjust-arrow-group">
-                                <span class="arrow-group-label">⅛ inch</span>
-                                <div class="arrow-btn-pair">
-                                    <button class="arrow-btn down small" onclick="adjHeight(-0.003125)">▼</button>
-                                    <button class="arrow-btn up small" onclick="adjHeight(0.003125)">▲</button>
-                                </div>
+                            <div class="poke-display" onclick="resetHeight()">
+                                <span class="poke-value" id="adj-height-val">0.000</span>
+                            </div>
+                            <div class="poke-btn-stack">
+                                <button class="poke-btn small" onclick="adjHeight(0.003125)">+</button>
+                                <span class="poke-btn-label">⅛"</span>
+                            </div>
+                            <div class="poke-btn-stack">
+                                <button class="poke-btn" onclick="adjHeight(0.02500)">+</button>
+                                <span class="poke-btn-label">1"</span>
                             </div>
                         </div>
                     </div>
