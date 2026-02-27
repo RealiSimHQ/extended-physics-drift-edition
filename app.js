@@ -5,7 +5,8 @@ const PATREON_REDIRECT = 'https://realisimhq.github.io/extended-physics-drift-ed
 const PATREON_OAUTH_URL = 'https://www.patreon.com/oauth2/authorize';
 
 function patreonLogin() {
-    const url = `${PATREON_OAUTH_URL}?response_type=code&client_id=${PATREON_CLIENT_ID}&redirect_uri=${encodeURIComponent(PATREON_REDIRECT)}&scope=identity%20identity%5Bemail%5D%20identity.memberships`;
+    const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+    const url = `${PATREON_OAUTH_URL}?response_type=code&client_id=${PATREON_CLIENT_ID}&redirect_uri=${encodeURIComponent(PATREON_REDIRECT)}&scope=identity%20identity%5Bemail%5D%20identity.memberships&state=${returnUrl}`;
     window.location.href = url;
 }
 
