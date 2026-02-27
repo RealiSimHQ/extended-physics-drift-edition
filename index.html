@@ -152,12 +152,13 @@
             </button>
         </section>
 
-        <!-- Visual Adjustments (shown after first generation) -->
-        <section id="adjust-section" class="step hidden">
-            <div class="adjust-panel">
-                <h3 class="adjust-title">Visual Adjustments</h3>
-                <p class="adjust-subtitle">Fine-tune your car's visual stance after generating</p>
-
+        <!-- Advanced Visual Settings (collapsible, always available) -->
+        <div class="adjust-dropdown">
+            <div class="adjust-dropdown-header" id="adjust-toggle">
+                <span class="adjust-dropdown-label">⚙️ Advanced Visual Settings</span>
+                <span class="adjust-dropdown-arrow" id="adjust-arrow">▼</span>
+            </div>
+            <div class="adjust-dropdown-body hidden" id="adjust-body">
                 <div class="adjust-slider-group">
                     <div class="adjust-slider-row">
                         <label class="adjust-label">Ride Height</label>
@@ -198,15 +199,8 @@
                         </div>
                     </div>
                 </div>
-
-                <button id="regenerate-btn" class="btn-regenerate" onclick="regeneratePack()">
-                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Re-Generate with Adjustments
-                </button>
             </div>
-        </section>
+        </div>
 
         <!-- Download modal injected by JS -->
 

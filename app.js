@@ -571,7 +571,6 @@ async function generatePack() {
         const carName = (State.ogMeta.carName || 'car').replace(/[^a-zA-Z0-9_-]/g, '_');
         if (!checkPatreonSession()) markTrialUsed();
         showDownloadModal(blob, `${carName}_ExtendedDrift.zip`);
-        showAdjustPanel();
 
     } catch (e) {
         console.error('Generation error:', e);
@@ -659,29 +658,25 @@ function resetSlider(id) {
     if (el) { el.value = 0; el.dispatchEvent(new Event('input')); }
 }
 
-function showAdjustPanel() {
-    const sec = document.getElementById('adjust-section');
-    if (sec) sec.classList.remove('hidden');
-}
-
 function initAdjustSliders() {
+    // Toggle dropdown
+    const toggle = document.getElementById('adjust-toggle');
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            document.getElementById('adjust-body').classList.toggle('hidden');
+            document.getElementById('adjust-arrow').classList.toggle('open');
+        });
+    }
+    // Slider value displays
     ['adj-height', 'adj-pitch', 'adj-width'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         const valEl = document.getElementById(id + '-val');
         el.addEventListener('input', () => {
             const v = parseFloat(el.value);
-            if (id === 'adj-pitch') {
-                valEl.textContent = v.toFixed(2);
-            } else {
-                valEl.textContent = v.toFixed(3);
-            }
+            valEl.textContent = id === 'adj-pitch' ? v.toFixed(2) : v.toFixed(3);
         });
     });
-}
-
-async function regeneratePack() {
-    await generatePack();
 }
 
 // ─── Event setup ───
