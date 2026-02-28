@@ -215,7 +215,7 @@ function buildCarIni(og, adj) {
     if (parsed.PIT_STOP) {
         for (const [k, v] of Object.entries(parsed.PIT_STOP)) out += `${k}=${v}\n`;
     }
-    out += '\n';
+    out += '\n; Generated using "Extended Drift Physics Generator" by RealiSimHQ : https://www.patreon.com/RealiSimHQ\n';
 
     return out;
 }
